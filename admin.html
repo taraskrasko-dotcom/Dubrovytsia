@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Адміністрування — Дубровиця</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <a href="index.html" class="logo">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/Lesser_Coat_of_Arms_of_Ukraine.svg/800px-Lesser_Coat_of_Arms_of_Ukraine.svg.png" alt="Герб" class="logo-img">
+                <div class="logo-text">
+                    <span class="logo-city">Дубровиця</span>
+                    <span class="logo-subtitle">Цифровий архів</span>
+                </div>
+            </a>
+            
+            <nav class="nav" id="mainNav">
+                <a href="index.html" class="nav-link">Головна</a>
+                <a href="history.html" class="nav-link">Історія</a>
+                <a href="photo-archive.html" class="nav-link">Фотоархів</a>
+                <a href="metrychni-knyhy.html" class="nav-link">Метричні книги</a>
+                <a href="books.html" class="nav-link">Книги</a>
+                <a href="contacts.html" class="nav-link">Контакти</a>
+            </nav>
+
+            <button class="theme-toggle" id="themeToggle" aria-label="Перемкнути тему">
+                <svg class="theme-icon sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                </svg>
+                <svg class="theme-icon moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+            </button>
+
+            <button class="mobile-toggle" id="mobileToggle" aria-label="Відкрити меню">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Admin Login -->
+    <div class="admin-login" id="adminLogin">
+        <h2>Вхід до панелі адміністратора</h2>
+        <form id="adminLoginForm">
+            <div class="form-group">
+                <label for="adminPassword" class="form-label">Пароль:</label>
+                <input type="password" 
+                       id="adminPassword" 
+                       class="form-input" 
+                       placeholder="Введіть пароль" 
+                       required>
+            </div>
+            <button type="submit" class="btn btn-block">Увійти</button>
+        </form>
+        <p style="margin-top: 1rem; font-size: 0.875rem; color: var(--color-text-muted); text-align: center;">
+            За замовчуванням: admin2026 (змініть у script.js)
+        </p>
+    </div>
+
+    <!-- Admin Panel -->
+    <div class="admin-panel" id="adminPanel">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <h2>Панель адміністратора</h2>
+            <button class="btn" id="logoutBtn">Вийти</button>
+        </div>
+
+        <!-- Tabs -->
+        <div class="admin-tabs">
+            <button class="admin-tab active">Додати фото</button>
+            <button class="admin-tab">Додати книгу</button>
+            <button class="admin-tab">Додати метричний запис</button>
+        </div>
+
+        <!-- Photo Form -->
+        <form class="admin-form" id="photoForm" style="display: block;">
+            <h3>Додати фотографію до архіву</h3>
+            
+            <div style="background: #e3f2fd; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                <p style="margin: 0; font-size: 0.875rem; line-height: 1.6;">
+                    💡 <strong>Підказка:</strong> Завантажте фото на <a href="https://imgur.com" target="_blank" style="color: var(--color-accent);">imgur.com</a>, 
+                    потім правою кнопкою миші → "Copy image address" і вставте посилання тут.
+                </p>
+            </div>
+            
+            <div class="form-group">
+                <label for="photoUrl" class="form-label">Посилання на фото:</label>
+                <input
+                    type="url"
+                    id="photoUrl"
+                    class="form-input"
+                    placeholder="https://i.imgur.com/xxxxxx.jpg"
+                    required
+                >
+                <small style="color: var(--color-text-muted); font-size: 0.875rem;">
+                    Вставте пряме посилання на зображення (має закінчуватись на .jpg, .png тощо)
+                </small>
+            </div>
+
+            <div class="form-group">
+                <label for="photoTitle" class="form-label">Назва/опис фото:</label>
+                <input
+                    id="photoTitle"
+                    class="form-input"
+                    placeholder="Наприклад: Центральна площа, 1920-ті роки"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="photoPeriod" class="form-label">Історичний період:</label>
+                <select id="photoPeriod" class="form-select" required>
+                    <option value="">Оберіть період</option>
+                    <option value="before-1900">До 1900</option>
+                    <option value="1900-1945">1900–1945</option>
+                    <option value="after-1945">Після 1945</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn">Додати фотографію</button>
+        </form>
+
+        <!-- Book Form -->
+        <form class="admin-form" id="bookForm" style="display: none;">
+            <h3>Додати книгу</h3>
+            
+            <div class="form-group">
+                <label class="form-label">Обкладинка книги:</label>
+                <div class="file-upload">
+                    <input type="file" accept="image/*" required>
+                    <p>Клацніть або перетягніть файл сюди</p>
+                    <img class="file-preview" style="display: none; margin-top: 1rem;">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="bookTitle" class="form-label">Назва книги:</label>
+                <input type="text" 
+                       id="bookTitle" 
+                       class="form-input" 
+                       placeholder="Наприклад: Дубровиця: Історія та сучасність" 
+                       required>
+            </div>
+
+            <div class="form-group">
+                <label for="bookAuthor" class="form-label">Автор:</label>
+                <input type="text" 
+                       id="bookAuthor" 
+                       class="form-input" 
+                       placeholder="Наприклад: Іван Петренко" 
+                       required>
+            </div>
+
+            <div class="form-group">
+                <label for="bookYear" class="form-label">Рік видання:</label>
+                <input type="number" 
+                       id="bookYear" 
+                       class="form-input" 
+                       placeholder="2020" 
+                       min="1800" 
+                       max="2026" 
+                       required>
+            </div>
+
+            <div class="form-group">
+                <label for="bookDescription" class="form-label">Опис книги:</label>
+                <textarea id="bookDescription" 
+                          class="form-textarea" 
+                          placeholder="Короткий опис змісту книги"
+                          required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="bookLocation" class="form-label">Місце зберігання / Посилання:</label>
+                <input type="text" 
+                       id="bookLocation" 
+                       class="form-input" 
+                       placeholder="Наприклад: Рівненська обласна бібліотека або URL">
+            </div>
+
+            <button type="submit" class="btn">Додати книгу</button>
+        </form>
+
+        <!-- Metric Book Form -->
+        <form class="admin-form" id="metricForm" style="display: none;">
+            <h3>Додати запис про метричну книгу</h3>
+            
+            <div class="form-group">
+                <label for="metricParish" class="form-label">Назва парафії:</label>
+                <input type="text" 
+                       id="metricParish" 
+                       class="form-input" 
+                       placeholder="Наприклад: Свято-Миколаївська парафія, Дубровиця" 
+                       required>
+            </div>
+
+            <div class="form-group">
+                <label for="metricYears" class="form-label">Охоплювані роки:</label>
+                <input type="text" 
+                       id="metricYears" 
+                       class="form-input" 
+                       placeholder="Наприклад: 1875–1915" 
+                       required>
+            </div>
+
+            <div class="form-group">
+                <label for="metricRecordTypes" class="form-label">Типи записів:</label>
+                <input type="text" 
+                       id="metricRecordTypes" 
+                       class="form-input" 
+                       placeholder="Наприклад: Народження, шлюби, смерті" 
+                       required>
+            </div>
+
+            <div class="form-group">
+                <label for="metricConfession" class="form-label">Конфесія:</label>
+                <select id="metricConfession" class="form-select" required>
+                    <option value="">Оберіть конфесію</option>
+                    <option value="Православна">Православна</option>
+                    <option value="Римо-католицька">Римо-католицька</option>
+                    <option value="Греко-католицька">Греко-католицька</option>
+                    <option value="Іудаїзм">Іудаїзм</option>
+                    <option value="Всі конфесії">Всі конфесії</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="metricVillages" class="form-label">Населені пункти:</label>
+                <input type="text" 
+                       id="metricVillages" 
+                       class="form-input" 
+                       placeholder="Наприклад: Дубровиця, Степангород, Білка" 
+                       required>
+            </div>
+
+            <div class="form-group">
+                <label for="metricArchive" class="form-label">Архів (фонд, опис):</label>
+                <input type="text" 
+                       id="metricArchive" 
+                       class="form-input" 
+                       placeholder="Наприклад: Державний архів Рівненської області, ф. 258, оп. 1" 
+                       required>
+            </div>
+
+            <div class="form-group">
+                <label for="metricLink" class="form-label">Посилання на архів (необов'язково):</label>
+                <input type="url" 
+                       id="metricLink" 
+                       class="form-input" 
+                       placeholder="https://example.com">
+            </div>
+
+            <button type="submit" class="btn">Додати запис</button>
+        </form>
+
+        <!-- Info Section -->
+        <div style="margin-top: 3rem; padding: 2rem; background: var(--color-bg-alt); border: 1px solid var(--color-border); border-radius: 8px;">
+            <h3 style="margin-bottom: 1rem;">📋 Інструкції</h3>
+            
+            <div style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem; color: var(--color-accent);">Як додати фото:</h4>
+                <ol style="line-height: 1.8; color: var(--color-text-muted); margin-left: 1.2rem;">
+                    <li>Завантажте фото на <a href="https://imgur.com" target="_blank" style="color: var(--color-accent);">imgur.com</a></li>
+                    <li>Правою кнопкою миші → "Copy image address"</li>
+                    <li>Вставте посилання в поле "Посилання на фото"</li>
+                    <li>Заповніть назву та оберіть період</li>
+                    <li>Натисніть "Додати фотографію"</li>
+                </ol>
+            </div>
+            
+            <div style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem; color: var(--color-accent);">Перевірка чи все працює:</h4>
+                <ol style="line-height: 1.8; color: var(--color-text-muted); margin-left: 1.2rem;">
+                    <li>Перейдіть на сторінку <a href="photo-archive.html" style="color: var(--color-accent);">Фотоархів</a></li>
+                    <li>Оновіть сторінку (F5)</li>
+                    <li>Ваше фото має з'явитись в галереї</li>
+                </ol>
+            </div>
+            
+            <div style="background: #fff3cd; padding: 1rem; border-radius: 6px; border-left: 4px solid #ffc107;">
+                <p style="margin: 0; line-height: 1.7; color: #856404;">
+                    <strong>⚠️ Важливо:</strong> Переконайтесь, що ви налаштували Google Apps Script відповідно до інструкції! 
+                    Без цього фотографії не будуть зберігатись.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer" style="margin-top: 4rem;">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4 class="footer-title">Дубровиця</h4>
+                    <p class="footer-text">
+                        Цифровий архів історичної спадщини селища міського типу Дубровиця, 
+                        Рівненська область, Україна.
+                    </p>
+                </div>
+                <div class="footer-section">
+                    <h4 class="footer-title">Навігація</h4>
+                    <nav class="footer-nav">
+                        <a href="history.html">Історія</a>
+                        <a href="photo-archive.html">Фотоархів</a>
+                        <a href="metrychni-knyhy.html">Метричні книги</a>
+                        <a href="books.html">Книги</a>
+                    </nav>
+                </div>
+                <div class="footer-section">
+                    <h4 class="footer-title">Контакти</h4>
+                    <p class="footer-text">
+                        Маєте матеріали або пропозиції?<br>
+                        <a href="contacts.html" class="footer-link">Зв'яжіться з нами</a>
+                    </p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Дубровиця. Цифровий архів.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
