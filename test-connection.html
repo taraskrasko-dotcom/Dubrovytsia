@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест з'єднання з Google Sheets</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2C5F3D;
+            margin-bottom: 20px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            background: #2C5F3D;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #1E4129;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Діагностика з'єднання з Google Sheets</h1>
+        
+        <div class="test-section">
+            <h3>Крок 1: Введіть адресу вашого Google Script</h3>
+            <input type="text" id="scriptUrl" placeholder="https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec">
+            <button onclick="saveUrl()">Зберегти адресу</button>
+        </div>
+
+        <div class="test-section">
+            <h3>Крок 2: Тест читання з Google Sheets</h3>
+            <button onclick="testRead()">Тест читання (GET)</button>
+            <div id="readResult"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>Крок 3: Тест додавання фото</h3>
+            <input type="text" id="testImageUrl" placeholder="https://i.imgur.com/example.jpg">
+            <input type="text" id="testTitle" placeholder="Тестова назва">
+            <select id="testPeriod">
+                <option value="before-1900">До 1900</option>
+                <option value="1900-1945">1900-1945</option>
+                <option value="after-1945">Після 1945</option>
+            </select>
+            <button onclick="testWrite()">Тест додавання (POST)</button>
+            <div id="writeResult"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>Крок 4: Перевірка CORS</h3>
+            <button onclick="checkCORS()">Перевірити CORS</button>
+            <div id="corsResult"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>📝 Інструкція якщо є помилки:</h3>
+            <div class="info">
+<strong>1. Якщо бачите "CORS error" або "mode: 'no-cors'":</strong>
+   - Ваш Google Script має бути налаштований правильно
+   - Перевірте що в Apps Script ви вибрали "Усі" в полі "Хто має доступ"
+   
+<strong>2. Якщо бачите "404 Not Found":</strong>
+   - Адреса скрипта неправильна
+   - Переконайтеся що ви скопіювали ПОВНУ адресу з Apps Script
+   
+<strong>3. Якщо бачите "Unauthorized":</strong>
+   - Скрипт не має дозволу на виконання
+   - Видаліть старе розгортання і створіть нове
+   
+<strong>4. Якщо тести проходять, але на сайті не працює:</strong>
+   - Очистіть кеш браузера (Ctrl+Shift+Delete)
+   - Перевірте чи правильно вставлена адреса в script.js
+   - Перевірте консоль браузера (F12 → Console)
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let GOOGLE_SCRIPT_URL = '';
+
+        // Завантажуємо збережену адресу
+        window.onload = function() {
+            const saved = localStorage.getItem('googleScriptUrl');
+            if (saved) {
+                document.getElementById('scriptUrl').value = saved;
+                GOOGLE_SCRIPT_URL = saved;
+            }
+        };
+
+        function saveUrl() {
+            const url = document.getElementById('scriptUrl').value.trim();
+            if (!url) {
+                alert('Введіть адресу!');
+                return;
+            }
+            GOOGLE_SCRIPT_URL = url;
+            localStorage.setItem('googleScriptUrl', url);
+            showResult('readResult', 'success', '✅ Адресу збережено!');
+        }
+
+        async function testRead() {
+            if (!GOOGLE_SCRIPT_URL) {
+                showResult('readResult', 'error', '❌ Спочатку збережіть адресу!');
+                return;
+            }
+
+            showResult('readResult', 'info', '⏳ Завантажую дані...');
+
+            try {
+                const response = await fetch(GOOGLE_SCRIPT_URL + '?action=getPhotos', {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+
+                console.log('Response status:', response.status);
+                console.log('Response headers:', [...response.headers]);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                console.log('Response data:', data);
+
+                if (data.status === 'success') {
+                    showResult('readResult', 'success', 
+                        `✅ УСПІХ! Завантажено ${data.photos?.length || 0} фото:\n\n` + 
+                        JSON.stringify(data, null, 2)
+                    );
+                } else {
+                    showResult('readResult', 'error', 
+                        `❌ Помилка в даних:\n\n` + 
+                        JSON.stringify(data, null, 2)
+                    );
+                }
+
+            } catch (error) {
+                console.error('Error:', error);
+                showResult('readResult', 'error', 
+                    `❌ ПОМИЛКА:\n\n` +
+                    `Тип: ${error.name}\n` +
+                    `Повідомлення: ${error.message}\n\n` +
+                    `Можливі причини:\n` +
+                    `- CORS помилка (скрипт не налаштований для публічного доступу)\n` +
+                    `- Неправильна адреса скрипта\n` +
+                    `- Немає інтернет з'єднання`
+                );
+            }
+        }
+
+        async function testWrite() {
+            if (!GOOGLE_SCRIPT_URL) {
+                showResult('writeResult', 'error', '❌ Спочатку збережіть адресу!');
+                return;
+            }
+
+            const imageUrl = document.getElementById('testImageUrl').value;
+            const title = document.getElementById('testTitle').value;
+            const period = document.getElementById('testPeriod').value;
+
+            if (!imageUrl || !title) {
+                showResult('writeResult', 'error', '❌ Заповніть всі поля!');
+                return;
+            }
+
+            showResult('writeResult', 'info', '⏳ Додаю фото...');
+
+            try {
+                const requestData = {
+                    action: 'addPhoto',
+                    imageUrl: imageUrl,
+                    title: title,
+                    period: period,
+                    date: new Date().toLocaleDateString('uk-UA')
+                };
+
+                console.log('Sending data:', requestData);
+
+                const response = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestData)
+                });
+
+                console.log('Response status:', response.status);
+
+                // З mode: 'no-cors' ми не можемо читати відповідь, 
+                // але якщо запит не впав - це добре
+                if (response.type === 'opaque' || response.ok) {
+                    showResult('writeResult', 'success', 
+                        `✅ УСПІХ! Фото додано.\n\n` +
+                        `Тепер перевірте Google Таблицю - там має з'явитись новий рядок.\n\n` +
+                        `Якщо рядка немає - є проблема з Apps Script.`
+                    );
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+            } catch (error) {
+                console.error('Error:', error);
+                showResult('writeResult', 'error', 
+                    `❌ ПОМИЛКА:\n\n` +
+                    `${error.message}\n\n` +
+                    `Перевірте:\n` +
+                    `1. Чи правильна адреса скрипта\n` +
+                    `2. Чи є дозвіл "Усі" в налаштуваннях розгортання\n` +
+                    `3. Чи правильно вставлений код в Apps Script`
+                );
+            }
+        }
+
+        async function checkCORS() {
+            if (!GOOGLE_SCRIPT_URL) {
+                showResult('corsResult', 'error', '❌ Спочатку збережіть адресу!');
+                return;
+            }
+
+            showResult('corsResult', 'info', '⏳ Перевіряю CORS...');
+
+            try {
+                const response = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'OPTIONS'
+                });
+
+                const corsHeaders = {
+                    'access-control-allow-origin': response.headers.get('access-control-allow-origin'),
+                    'access-control-allow-methods': response.headers.get('access-control-allow-methods'),
+                    'access-control-allow-headers': response.headers.get('access-control-allow-headers')
+                };
+
+                console.log('CORS headers:', corsHeaders);
+
+                showResult('corsResult', 'success', 
+                    `✅ CORS Headers:\n\n` +
+                    JSON.stringify(corsHeaders, null, 2) + '\n\n' +
+                    `Якщо всі значення null - CORS не налаштований,\n` +
+                    `але для Google Apps Script це нормально.`
+                );
+
+            } catch (error) {
+                showResult('corsResult', 'info', 
+                    `ℹ️ CORS перевірка не пройшла, але це нормально.\n\n` +
+                    `Google Apps Script має власний механізм CORS.\n` +
+                    `Просто переконайтеся що в налаштуваннях розгортання\n` +
+                    `вибрано "Усі" у полі "Хто має доступ".`
+                );
+            }
+        }
+
+        function showResult(elementId, type, message) {
+            const element = document.getElementById(elementId);
+            element.className = 'result ' + type;
+            element.textContent = message;
+        }
+    </script>
+</body>
+</html>
